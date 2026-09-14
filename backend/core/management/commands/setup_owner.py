@@ -18,21 +18,13 @@ class Command(BaseCommand):
         email = options.get('email') or os.getenv('DJANGO_SUPERUSER_EMAIL', 'sahelmhd3@gmail.com')
 
         if not username or not password:
-            self.stdout.write(self.style.ERROR(
-                "Error: Username and password must be supplied either via arguments:\n"
-                "    python manage.py setup_owner --username <name> --password <pass>\n"
-                "or via environment variables DJANGO_SUPERUSER_USERNAME and DJANGO_SUPERUSER_PASSWORD."
+            self.stdout.write(self.style.NOTICE(
+                "Notice: DJANGO_SUPERUSER_USERNAME or DJANGO_SUPERUSER_PASSWORD not set. Skipping superuser setup."
             ))
             return
 
-        user, created = User.objects.get_or_create(username=username, defaults={'email': email, 'is_staff': True, 'is_superuser': True})
-        user.set_password(password)
-        user.email = email
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-
-        if created:
-            self.stdout.write(self.style.SUCCESS(f"[OK] Owner superuser '{username}' successfully created."))
+        if User.objects.filter(username=username).exists():
+            self.stdout.write(self.style.SUCCESS(f"[INFO] Superuser '{username}' already exists. Skipping creation."))
         else:
-            self.stdout.write(self.style.SUCCESS(f"[OK] Owner superuser '{username}' credentials updated."))
+            User.objects.create_superuser(username=username, email=email, password=password)
+            self.stdout.write(self.style.SUCCESS(f"[OK] Superuser '{username}' successfully created."))
