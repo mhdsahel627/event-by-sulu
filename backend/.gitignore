@@ -1,0 +1,14 @@
+# Environment variables
+.env
+.env.*
+*.env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+db.sqlite3
+
+# Media files (local fallback)
+media/

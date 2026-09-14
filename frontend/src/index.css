@@ -1,0 +1,318 @@
+/* ==========================================================================
+   EVENT BY SULU - EDITORIAL LUXURY DESIGN SYSTEM
+   Bespoke Event & Wedding Decoration Atelier
+   ========================================================================== */
+
+:root {
+  /* Canvas & Atmospheric Surfaces */
+  --bg-primary: #07080A;
+  --bg-secondary: #0D0F14;
+  --bg-card: #12151C;
+  --bg-card-elevated: #181C25;
+  --bg-glass: rgba(10, 12, 16, 0.82);
+  --bg-glass-heavy: rgba(7, 8, 10, 0.94);
+
+  /* Typography Palette (Warm Ivory & Oyster) */
+  --text-primary: #F7F4EE;
+  --text-secondary: #BDB9AD;
+  --text-muted: #7A776E;
+  --text-ivory-light: #FFFFFF;
+
+  /* Champagne & Gold Accents */
+  --accent-gold: #C5A880;
+  --accent-gold-light: #E7CFAD;
+  --accent-gold-dark: #8E7453;
+  --accent-gold-subtle: rgba(197, 168, 128, 0.09);
+  --accent-gold-border: rgba(197, 168, 128, 0.28);
+  --accent-gold-glow: rgba(197, 168, 128, 0.16);
+
+  /* Borders & Dividers */
+  --border-subtle: #1C202B;
+  --border-medium: #282E3D;
+  --border-gold: rgba(197, 168, 128, 0.35);
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.75);
+  --shadow-gold: 0 12px 40px rgba(197, 168, 128, 0.12);
+
+  /* Editorial Typography */
+  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Timing & Easing */
+  --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+  --transition-fast: 0.25s var(--ease-cinematic);
+  --transition-smooth: 0.5s var(--ease-cinematic);
+  --transition-slow: 0.8s var(--ease-cinematic);
+
+  /* Dimensions */
+  --max-width: 1360px;
+  --header-height: 84px;
+}
+
+/* Reset & Global */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::selection {
+  background-color: var(--accent-gold);
+  color: #07080A;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: #222733;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold-dark);
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5EDE0 35%, #C5A880 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Layout Container */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  min-height: 50px;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #DFBF94 0%, #C5A880 100%);
+  color: #07080A;
+  box-shadow: 0 4px 24px rgba(197, 168, 128, 0.28);
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #EAD3B0 0%, #D4AF37 100%);
+  box-shadow: 0 8px 32px rgba(197, 168, 128, 0.45);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: rgba(10, 12, 16, 0.4);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  border-color: var(--border-gold);
+}
+
+.btn-outline:hover {
+  background: var(--accent-gold-subtle);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(197, 168, 128, 0.15);
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: #FFFFFF;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+  background: #20BA59;
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.45);
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  padding: 10px 20px;
+  font-size: 12px;
+  min-height: 42px;
+}
+
+/* Luxury Editorial Card */
+.luxury-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.luxury-card:hover {
+  border-color: var(--accent-gold-border);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-5px);
+}
+
+/* Badges */
+.badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  background: var(--accent-gold-subtle);
+  border: 1px solid var(--border-gold);
+  color: var(--accent-gold-light);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+/* Editorial Dividers */
+.gold-divider {
+  width: 50px;
+  height: 2px;
+  background: var(--accent-gold);
+  margin: 22px auto;
+}
+
+.gold-divider-left {
+  width: 50px;
+  height: 2px;
+  background: var(--accent-gold);
+  margin: 18px 0 26px 0;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  padding: 15px 18px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  background: var(--bg-card);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Ken Burns Subtle Scale Animation */
+@keyframes kenBurnsSubtle {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-ken-burns {
+  animation: kenBurnsSubtle 24s ease-in-out infinite;
+}
+
+/* Scroll indicator bounce */
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 0.3;
+  }
+}
+
+.scroll-indicator-dot {
+  animation: scrollBounce 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
