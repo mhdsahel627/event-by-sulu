@@ -149,16 +149,7 @@ export default function DesignDetailPage() {
             {design.title}
           </h1>
 
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: 'clamp(16px, 1.8vw, 19px)',
-              maxWidth: '850px',
-              lineHeight: 1.75,
-            }}
-          >
-            {design.short_description}
-          </p>
+
         </div>
 
         {/* Main Media Carousel Viewport */}
