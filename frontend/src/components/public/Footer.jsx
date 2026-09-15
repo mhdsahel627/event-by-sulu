@@ -188,7 +188,7 @@ export default function Footer() {
                   }}
                 >
                   <Instagram size={16} color="var(--accent-gold)" />
-                  <span>Instagram Showcase</span>
+                  <span>sulu_mon_kkd</span>
                 </a>
               )}
             </div>
