@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Upload, Trash2, Info, Image as ImageIcon, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  Upload,
+  Trash2,
+  Info,
+  Image as ImageIcon,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-react';
 import { api } from '../../services/api';
 
 export default function DesignImagesManagePage() {
@@ -54,11 +62,11 @@ export default function DesignImagesManagePage() {
       await api.uploadDesignImages(formData);
       setSelectedFiles([]);
       setCaption('');
-      setMessage('Photos successfully uploaded and synced to Gallery!');
+      setMessage({ type: 'success', text: 'Photos successfully uploaded and synced to Gallery!' });
       await loadData();
     } catch (err) {
       console.error('Upload error:', err);
-      setMessage('Failed to upload photos. Please verify files.');
+      setMessage({ type: 'error', text: 'Failed to upload photos. Please verify files.' });
     } finally {
       setUploading(false);
     }
@@ -76,18 +84,15 @@ export default function DesignImagesManagePage() {
   };
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
       {/* Back Button */}
       <Link
         to="/management/designs"
+        className="apple-action-btn"
         style={{
           display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          color: '#94A3B8',
-          textDecoration: 'none',
-          fontSize: '13px',
           marginBottom: '20px',
+          padding: '8px 14px',
         }}
       >
         <ArrowLeft size={14} />
@@ -95,237 +100,305 @@ export default function DesignImagesManagePage() {
       </Link>
 
       {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span style={{ fontSize: '12px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            {design?.category_name}
+      <div style={{ marginBottom: '28px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <span className="apple-badge apple-badge-gold">
+            {design?.category_name || 'Theme'}
           </span>
         </div>
-        <h1 style={{ fontSize: '28px', color: '#F8FAFC', fontFamily: 'var(--font-serif)', marginBottom: '8px' }}>
-          Photo Manager: {design?.title || 'Design'}
+        <h1
+          style={{
+            fontSize: 'clamp(22px, 3vw, 28px)',
+            fontWeight: 600,
+            color: 'var(--apple-text-primary)',
+            fontFamily: 'var(--font-serif)',
+            marginBottom: '6px',
+          }}
+        >
+          Photo Manager: {design?.title || 'Decoration Setup'}
         </h1>
-        <p style={{ color: '#94A3B8', fontSize: '14px' }}>
+        <p style={{ color: 'var(--apple-text-secondary)', fontSize: '14px', margin: 0 }}>
           Upload high-resolution photographs of this decoration setup.
         </p>
       </div>
 
-      {/* SINGLE SOURCE OF TRUTH EDUCATIONAL NOTICE */}
+      {/* Educational Notice: Single Source of Truth */}
       <div
+        className="apple-card"
         style={{
+          padding: '16px 20px',
+          marginBottom: '28px',
           display: 'flex',
           alignItems: 'flex-start',
           gap: '14px',
-          padding: '18px 20px',
-          backgroundColor: 'rgba(197, 168, 128, 0.08)',
-          border: '1px solid var(--border-gold-subtle)',
-          borderRadius: '6px',
-          marginBottom: '36px',
+          backgroundColor: 'var(--apple-accent-subtle)',
+          borderColor: 'var(--apple-hairline-gold)',
         }}
       >
-        <Info size={20} color="var(--accent-gold)" style={{ flexShrink: 0, marginTop: '2px' }} />
+        <Info
+          size={18}
+          color="var(--apple-accent)"
+          style={{ flexShrink: 0, marginTop: '2px' }}
+        />
         <div>
-          <h4 style={{ color: '#F8FAFC', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>
-            Gallery images come from your design photos
-          </h4>
-          <p style={{ color: '#B8B4AA', fontSize: '13px', lineHeight: 1.6 }}>
-            There is no separate gallery upload. Any photo uploaded here automatically appears in the public <strong>/gallery</strong> and in this design's fullscreen Lightbox.
+          <div
+            style={{
+              color: 'var(--apple-text-primary)',
+              fontSize: '13px',
+              fontWeight: 600,
+              marginBottom: '3px',
+            }}
+          >
+            Gallery photos automatically sync from here
+          </div>
+          <p
+            style={{
+              color: 'var(--apple-text-secondary)',
+              fontSize: '12px',
+              lineHeight: 1.5,
+              margin: 0,
+            }}
+          >
+            Any photo uploaded here automatically appears in the public{' '}
+            <strong style={{ color: 'var(--apple-text-primary)' }}>/gallery</strong> and in this
+            design's customer lightbox.
           </p>
         </div>
       </div>
 
       {/* Multi-Photo Upload Area */}
-      <div
-        style={{
-          backgroundColor: '#12151B',
-          border: '1px solid #1E232E',
-          borderRadius: '8px',
-          padding: '28px',
-          marginBottom: '40px',
-        }}
-      >
-        <h3 style={{ fontSize: '17px', color: '#F8FAFC', marginBottom: '16px', fontFamily: 'var(--font-serif)' }}>
-          + Add New Photos
-        </h3>
-
-        {message && (
-          <div
-            style={{
-              padding: '12px 16px',
-              backgroundColor: message.includes('Failed') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)',
-              color: message.includes('Failed') ? '#F87171' : '#34D399',
-              borderRadius: '4px',
-              fontSize: '13px',
-              marginBottom: '20px',
-            }}
-          >
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleUpload}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-            <div>
-              <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Select Multiple Image Files *</label>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                required
-                onChange={handleFileSelect}
-                style={{ fontSize: '13px', color: '#94A3B8', marginTop: '6px' }}
-              />
-              {selectedFiles.length > 0 && (
-                <div style={{ fontSize: '12px', color: '#60A5FA', marginTop: '6px' }}>
-                  {selectedFiles.length} file(s) ready to upload
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Optional Caption / Angle</label>
-              <input
-                type="text"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="e.g. Frontal Stage View, Floral Pillar Close-up..."
-                className="form-input"
-                style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC', marginTop: '6px' }}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={uploading || selectedFiles.length === 0}
-            className="btn btn-gold btn-sm"
-          >
-            <Upload size={14} />
-            <span>{uploading ? 'Uploading & Syncing...' : `Upload ${selectedFiles.length > 0 ? selectedFiles.length : ''} Photos`}</span>
-          </button>
-        </form>
-      </div>
-
-      {/* Primary Cover Image Preview */}
-      {design?.primary_image && (
-        <div style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '16px', color: '#94A3B8', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Primary Cover Image
-          </h3>
-          <div
-            style={{
-              display: 'inline-block',
-              position: 'relative',
-              borderRadius: '6px',
-              overflow: 'hidden',
-              border: '2px solid var(--accent-gold)',
-              maxWidth: '320px',
-            }}
-          >
-            <img
-              src={design.primary_image}
-              alt="Primary cover"
-              style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block' }}
-            />
-            <div
+      <div className="apple-card" style={{ marginBottom: '32px' }}>
+        <div className="apple-card-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Upload size={16} color="var(--apple-accent)" />
+            <span
               style={{
-                position: 'absolute',
-                bottom: '10px',
-                left: '10px',
-                background: 'rgba(0, 0, 0, 0.8)',
-                padding: '4px 8px',
-                borderRadius: '2px',
-                fontSize: '11px',
-                color: 'var(--accent-gold-light)',
+                fontSize: '14px',
                 fontWeight: 600,
-                textTransform: 'uppercase',
+                color: 'var(--apple-text-primary)',
               }}
             >
-              Primary Cover
-            </div>
+              Upload New High-Res Photos
+            </span>
           </div>
         </div>
-      )}
 
-      {/* Additional Design Photos Grid */}
-      <div>
-        <h3 style={{ fontSize: '16px', color: '#94A3B8', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Additional Gallery Photos ({images.length})
-        </h3>
+        <div className="apple-card-body">
+          {message && (
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: 'var(--apple-radius-sm)',
+                fontSize: '13px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor:
+                  message.type === 'error'
+                    ? 'var(--apple-danger-subtle)'
+                    : 'var(--apple-success-subtle)',
+                color:
+                  message.type === 'error' ? 'var(--apple-danger)' : 'var(--apple-success)',
+                border: `1px solid ${
+                  message.type === 'error'
+                    ? 'rgba(248, 113, 113, 0.3)'
+                    : 'rgba(52, 211, 153, 0.3)'
+                }`,
+              }}
+            >
+              <CheckCircle2 size={16} />
+              <span>{message.text}</span>
+            </div>
+          )}
 
-        {loading ? (
-          <div style={{ color: '#94A3B8', padding: '24px 0' }}>Loading photos...</div>
-        ) : images.length === 0 ? (
-          <div
-            style={{
-              padding: '40px',
-              backgroundColor: '#12151B',
-              borderRadius: '6px',
-              textAlign: 'center',
-              color: '#94A3B8',
-              border: '1px dashed #2A303C',
-            }}
-          >
-            No additional photos uploaded yet. Use the upload box above to add photos.
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: '20px',
-            }}
-          >
-            {images.map((img) => (
-              <div
-                key={img.id}
-                style={{
-                  backgroundColor: '#12151B',
-                  border: '1px solid #1E232E',
-                  borderRadius: '6px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
-                <div style={{ position: 'relative', aspectRatio: '4/3' }}>
-                  <img
-                    src={img.image}
-                    alt={img.caption || 'Design photo'}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <button
-                    onClick={() => handleDeleteImage(img.id)}
-                    aria-label="Delete image"
+          <form onSubmit={handleUpload}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '16px',
+                marginBottom: '18px',
+              }}
+            >
+              <div className="apple-input-group" style={{ margin: 0 }}>
+                <label className="apple-label">Select Photos *</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  required
+                  onChange={handleFileSelect}
+                  style={{
+                    fontSize: '13px',
+                    color: 'var(--apple-text-secondary)',
+                    padding: '8px 0',
+                  }}
+                />
+                {selectedFiles.length > 0 && (
+                  <div
                     style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '8px',
-                      backgroundColor: 'rgba(239, 68, 68, 0.9)',
-                      border: 'none',
-                      color: '#FFFFFF',
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
+                      fontSize: '12px',
+                      color: 'var(--apple-accent)',
+                      fontWeight: 500,
+                      marginTop: '4px',
                     }}
                   >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-
-                <div style={{ padding: '12px' }}>
-                  <p style={{ fontSize: '12px', color: '#E2E8F0', margin: 0 }}>
-                    {img.caption || 'No caption'}
-                  </p>
-                  <span style={{ fontSize: '11px', color: '#64748B' }}>Order: #{img.display_order}</span>
-                </div>
+                    {selectedFiles.length} photo(s) selected
+                  </div>
+                )}
               </div>
-            ))}
+
+              <div className="apple-input-group" style={{ margin: 0 }}>
+                <label className="apple-label">Optional Photo Caption</label>
+                <input
+                  type="text"
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder="e.g. Center stage lighting detail"
+                  className="apple-input"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="submit"
+                disabled={uploading || selectedFiles.length === 0}
+                className="apple-btn apple-btn-gold"
+              >
+                <Upload size={14} />
+                <span>{uploading ? 'Uploading to Gallery...' : 'Upload Selected Photos'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Existing Additional Photos Grid */}
+      <div className="apple-card">
+        <div className="apple-card-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <ImageIcon size={16} color="var(--apple-accent)" />
+            <span
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'var(--apple-text-primary)',
+              }}
+            >
+              Attached Gallery Photography ({images.length})
+            </span>
           </div>
-        )}
+        </div>
+
+        <div className="apple-card-body">
+          {loading ? (
+            <div
+              style={{
+                padding: '40px',
+                textAlign: 'center',
+                color: 'var(--apple-text-muted)',
+              }}
+            >
+              Loading photos...
+            </div>
+          ) : images.length === 0 ? (
+            <div
+              style={{
+                padding: '48px 20px',
+                textAlign: 'center',
+                color: 'var(--apple-text-muted)',
+              }}
+            >
+              <ImageIcon size={36} color="var(--apple-text-subtle)" style={{ marginBottom: '12px' }} />
+              <div
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: 'var(--apple-text-secondary)',
+                }}
+              >
+                No Additional Photos Yet
+              </div>
+              <p style={{ fontSize: '13px', color: 'var(--apple-text-muted)', marginTop: '4px' }}>
+                Use the upload box above to add high-resolution photos for this setup.
+              </p>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '16px',
+              }}
+            >
+              {images.map((img) => (
+                <div
+                  key={img.id}
+                  style={{
+                    backgroundColor: 'var(--apple-surface-elevated)',
+                    border: '1px solid var(--apple-hairline)',
+                    borderRadius: 'var(--apple-radius-md)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+                    <img
+                      src={img.image}
+                      alt={img.caption || 'Design photo'}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      padding: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '8px',
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--apple-text-primary)',
+                          fontWeight: 500,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {img.caption || 'Photo #' + img.id}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--apple-text-muted)' }}>
+                        Order #{img.display_order}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleDeleteImage(img.id)}
+                      className="apple-action-btn apple-action-btn-delete"
+                      aria-label="Delete photo"
+                      style={{ padding: '6px 8px', flexShrink: 0 }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

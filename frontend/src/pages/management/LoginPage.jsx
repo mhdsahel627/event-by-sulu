@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Lock, User, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, User, ArrowRight, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import '../../admin-theme.css';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -32,7 +33,7 @@ export default function LoginPage() {
       navigate(from, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
-      setError('Invalid username or password, or account is not authorized.');
+      setError('Invalid credentials or account is not authorized for management access.');
     } finally {
       setLoading(false);
     }
@@ -45,42 +46,74 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#0A0C0F',
-        padding: '24px',
+        backgroundColor: 'var(--apple-bg)',
+        padding: '24px 16px',
+        fontFamily: 'var(--font-sans)',
+        position: 'relative',
       }}
     >
+      {/* Subtle Background Glow */}
       <div
+        style={{
+          position: 'absolute',
+          top: '30%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '320px',
+          height: '320px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(197, 168, 128, 0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        className="apple-card"
         style={{
           width: '100%',
           maxWidth: '420px',
-          backgroundColor: '#12151B',
-          border: '1px solid #1E232E',
-          borderRadius: '8px',
-          padding: '40px 32px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+          padding: '36px 32px',
+          position: 'relative',
+          zIndex: 10,
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        {/* Top Atelier Badge */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(197, 168, 128, 0.1)',
-              border: '1px solid var(--border-gold-subtle)',
+              width: '46px',
+              height: '46px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #2A3344 0%, #171C26 100%)',
+              border: '1px solid var(--apple-hairline-gold)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 16px auto',
+              color: 'var(--apple-accent-light)',
+              fontWeight: 700,
+              fontSize: '18px',
+              fontFamily: 'var(--font-serif)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
             }}
           >
-            <Lock size={22} color="var(--accent-gold)" />
+            S
           </div>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: '#F8FAFC', marginBottom: '6px' }}>
+
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '22px',
+              fontWeight: 600,
+              color: 'var(--apple-text-primary)',
+              marginBottom: '6px',
+              letterSpacing: '-0.015em',
+            }}
+          >
             {settings.business_name || 'Event by Sulu'}
           </h2>
-          <p style={{ color: '#94A3B8', fontSize: '13px' }}>
-            Sign in to access the owner management panel
+          <p style={{ color: 'var(--apple-text-secondary)', fontSize: '13px', margin: 0 }}>
+            Sign in to access the Atelier Control Center
           </p>
         </div>
 
@@ -88,12 +121,13 @@ export default function LoginPage() {
           <div
             style={{
               padding: '12px 14px',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#F87171',
-              borderRadius: '4px',
+              backgroundColor: 'var(--apple-danger-subtle)',
+              border: '1px solid rgba(248, 113, 113, 0.3)',
+              color: 'var(--apple-danger)',
+              borderRadius: 'var(--apple-radius-sm)',
               fontSize: '13px',
               marginBottom: '20px',
+              lineHeight: 1.4,
             }}
           >
             {error}
@@ -101,8 +135,8 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group" style={{ marginBottom: '18px' }}>
-            <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }} htmlFor="username">
+          <div className="apple-input-group" style={{ marginBottom: '18px' }}>
+            <label className="apple-label" htmlFor="username">
               Username
             </label>
             <div style={{ position: 'relative' }}>
@@ -113,20 +147,19 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Owner username"
-                className="form-input"
-                style={{
-                  backgroundColor: '#191D24',
-                  borderColor: '#2A303C',
-                  color: '#F8FAFC',
-                  paddingLeft: '40px',
-                }}
+                className="apple-input"
+                style={{ paddingLeft: '38px' }}
               />
-              <User size={16} color="#64748B" style={{ position: 'absolute', left: '14px', top: '16px' }} />
+              <User
+                size={16}
+                color="var(--apple-text-muted)"
+                style={{ position: 'absolute', left: '12px', top: '14px' }}
+              />
             </div>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }} htmlFor="password">
+          <div className="apple-input-group" style={{ marginBottom: '26px' }}>
+            <label className="apple-label" htmlFor="password">
               Password
             </label>
             <div style={{ position: 'relative' }}>
@@ -137,42 +170,45 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="form-input"
-                style={{
-                  backgroundColor: '#191D24',
-                  borderColor: '#2A303C',
-                  color: '#F8FAFC',
-                  paddingLeft: '40px',
-                }}
+                className="apple-input"
+                style={{ paddingLeft: '38px' }}
               />
-              <Lock size={16} color="#64748B" style={{ position: 'absolute', left: '14px', top: '16px' }} />
+              <Lock
+                size={16}
+                color="var(--apple-text-muted)"
+                style={{ position: 'absolute', left: '12px', top: '14px' }}
+              />
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-gold"
-            style={{ width: '100%', padding: '14px' }}
+            className="apple-btn apple-btn-gold"
+            style={{ width: '100%', padding: '13px', fontSize: '14px', minHeight: '44px' }}
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In to Management'}</span>
-            <ArrowRight size={16} />
+            <span>{loading ? 'Authenticating...' : 'Sign In to Console'}</span>
+            <ArrowRight size={15} />
           </button>
         </form>
 
-        <div style={{ marginTop: '28px', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
           <Link
             to="/"
             style={{
-              color: '#64748B',
-              fontSize: '13px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: 'var(--apple-text-secondary)',
+              fontSize: '12px',
               textDecoration: 'none',
-              transition: 'color 0.2s',
+              transition: 'var(--apple-transition)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#94A3B8')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#64748B')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--apple-text-primary)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--apple-text-secondary)')}
           >
-            &larr; Return to Public Website
+            <ArrowLeft size={13} />
+            <span>Return to Public Website</span>
           </Link>
         </div>
       </div>

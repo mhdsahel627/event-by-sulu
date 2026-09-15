@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Image as ImageIcon, Sparkles, Filter, X } from 'lucide-react';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Image as ImageIcon,
+  Sparkles,
+  Filter,
+  Search,
+  X,
+  ChevronRight,
+} from 'lucide-react';
 import { api } from '../../services/api';
 
 export default function DesignsManagePage() {
   const [designs, setDesigns] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   // Modal State
@@ -44,6 +55,18 @@ export default function DesignsManagePage() {
   useEffect(() => {
     loadData();
   }, [selectedCategoryFilter]);
+
+  // Filtered designs by search query
+  const filteredDesigns = useMemo(() => {
+    if (!searchQuery.trim()) return designs;
+    const q = searchQuery.toLowerCase();
+    return designs.filter(
+      (d) =>
+        d.title?.toLowerCase().includes(q) ||
+        d.short_description?.toLowerCase().includes(q) ||
+        d.category_name?.toLowerCase().includes(q)
+    );
+  }, [designs, searchQuery]);
 
   const handleOpenAdd = () => {
     setEditingDesign(null);
@@ -83,7 +106,11 @@ export default function DesignsManagePage() {
   };
 
   const handleDelete = async (id, title) => {
-    if (window.confirm(`Are you sure you want to delete design "${title}"? This will also remove its associated gallery images.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete decoration setup "${title}"? This will also remove its associated gallery images.`
+      )
+    ) {
       try {
         await api.deleteDesign(id);
         await loadData();
@@ -137,8 +164,8 @@ export default function DesignsManagePage() {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header */}
+    <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
+      {/* Page Header */}
       <div
         style={{
           display: 'flex',
@@ -146,117 +173,184 @@ export default function DesignsManagePage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '16px',
-          marginBottom: '32px',
+          marginBottom: '24px',
         }}
       >
         <div>
-          <h1 style={{ fontSize: '26px', color: '#F8FAFC', fontFamily: 'var(--font-serif)', marginBottom: '4px' }}>
-            Design & Image Management
+          <h1
+            style={{
+              fontSize: 'clamp(22px, 3vw, 26px)',
+              fontWeight: 600,
+              color: 'var(--apple-text-primary)',
+              fontFamily: 'var(--font-serif)',
+              marginBottom: '4px',
+            }}
+          >
+            Design & Portfolio Catalog
           </h1>
-          <p style={{ color: '#94A3B8', fontSize: '14px' }}>
-            Create decoration setups, assign categories, and upload gallery photography.
+          <p style={{ color: 'var(--apple-text-secondary)', fontSize: '14px', margin: 0 }}>
+            Manage decoration setups, photo albums, and spotlight features.
           </p>
         </div>
 
-        <button onClick={handleOpenAdd} className="btn btn-gold btn-sm">
+        <button onClick={handleOpenAdd} className="apple-btn apple-btn-gold">
           <Plus size={16} />
           <span>Add New Design</span>
         </button>
       </div>
 
-      {/* Category Filter Dropdown */}
+      {/* Filter and Search Controls (Apple Segmented Bar) */}
       <div
+        className="apple-card"
         style={{
+          padding: '12px 16px',
+          marginBottom: '20px',
           display: 'flex',
+          flexWrap: 'wrap',
           alignItems: 'center',
+          justifyContent: 'space-between',
           gap: '12px',
-          marginBottom: '24px',
-          backgroundColor: '#12151B',
-          padding: '12px 20px',
-          borderRadius: '6px',
-          border: '1px solid #1E232E',
         }}
       >
-        <Filter size={16} color="#94A3B8" />
-        <span style={{ fontSize: '13px', color: '#94A3B8' }}>Filter by Category:</span>
-        <select
-          value={selectedCategoryFilter}
-          onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-          className="form-select"
+        {/* Category Filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 240px' }}>
+          <Filter size={15} color="var(--apple-text-muted)" />
+          <span style={{ fontSize: '12px', color: 'var(--apple-text-secondary)', fontWeight: 500 }}>
+            Category:
+          </span>
+          <select
+            value={selectedCategoryFilter}
+            onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+            className="apple-select"
+            style={{
+              padding: '6px 12px',
+              fontSize: '13px',
+              maxWidth: '220px',
+            }}
+          >
+            <option value="">All Categories ({designs.length})</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.slug}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Search Input */}
+        <div
           style={{
-            maxWidth: '240px',
-            padding: '6px 12px',
-            backgroundColor: '#191D24',
-            borderColor: '#2A303C',
-            fontSize: '13px',
-            color: '#F8FAFC',
+            position: 'relative',
+            flex: '1 1 240px',
+            maxWidth: '320px',
           }}
         >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.slug}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          <Search
+            size={14}
+            color="var(--apple-text-muted)"
+            style={{ position: 'absolute', left: '10px', top: '10px' }}
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search designs by title..."
+            className="apple-input"
+            style={{
+              padding: '7px 12px 7px 32px',
+              fontSize: '13px',
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                position: 'absolute',
+                right: '8px',
+                top: '8px',
+                background: 'none',
+                border: 'none',
+                color: 'var(--apple-text-muted)',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Designs Table */}
-      <div
-        style={{
-          backgroundColor: '#12151B',
-          border: '1px solid #1E232E',
-          borderRadius: '8px',
-          overflow: 'hidden',
-        }}
-      >
+      {/* Designs Table Container */}
+      <div className="apple-table-wrap">
         {loading ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#94A3B8' }}>
-            Loading designs...
+          <div
+            style={{
+              padding: '48px',
+              textAlign: 'center',
+              color: 'var(--apple-text-muted)',
+              fontSize: '14px',
+            }}
+          >
+            Loading decoration setups...
           </div>
-        ) : designs.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#94A3B8' }}>
-            No designs found. Click "Add New Design" above.
+        ) : filteredDesigns.length === 0 ? (
+          <div
+            style={{
+              padding: '56px 20px',
+              textAlign: 'center',
+              color: 'var(--apple-text-muted)',
+            }}
+          >
+            <Sparkles size={36} color="var(--apple-text-subtle)" style={{ marginBottom: '12px' }} />
+            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-text-secondary)' }}>
+              {searchQuery ? 'No designs matching your search' : 'No decoration setups found'}
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--apple-text-muted)', marginTop: '4px' }}>
+              {searchQuery
+                ? 'Try a different keyword or clear your filter.'
+                : 'Click "Add New Design" above to publish your first portfolio piece.'}
+            </p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <table className="apple-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid #1E232E', backgroundColor: '#171B22', color: '#94A3B8', fontSize: '12px', textTransform: 'uppercase' }}>
-                <th style={{ padding: '14px 20px' }}>Primary Cover</th>
-                <th style={{ padding: '14px 20px' }}>Title & Category</th>
-                <th style={{ padding: '14px 20px' }}>Gallery Photos</th>
-                <th style={{ padding: '14px 20px' }}>Featured</th>
-                <th style={{ padding: '14px 20px' }}>Status</th>
-                <th style={{ padding: '14px 20px', textAlign: 'right' }}>Actions</th>
+              <tr>
+                <th style={{ width: '80px' }}>Cover</th>
+                <th>Setup Title & Theme</th>
+                <th>Gallery Photos</th>
+                <th>Spotlight</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {designs.map((d) => (
-                <tr
-                  key={d.id}
-                  style={{
-                    borderBottom: '1px solid #1E232E',
-                    color: '#E2E8F0',
-                  }}
-                >
-                  <td style={{ padding: '12px 20px' }}>
+              {filteredDesigns.map((d) => (
+                <tr key={d.id}>
+                  <td>
                     {d.primary_image ? (
                       <img
                         src={d.primary_image}
                         alt={d.title}
-                        style={{ width: '60px', height: '42px', objectFit: 'cover', borderRadius: '4px' }}
+                        style={{
+                          width: '56px',
+                          height: '40px',
+                          objectFit: 'cover',
+                          borderRadius: '6px',
+                          border: '1px solid var(--apple-hairline)',
+                        }}
                       />
                     ) : (
                       <div
                         style={{
-                          width: '60px',
-                          height: '42px',
-                          borderRadius: '4px',
-                          backgroundColor: '#1E232D',
+                          width: '56px',
+                          height: '40px',
+                          borderRadius: '6px',
+                          backgroundColor: 'var(--apple-surface-elevated)',
+                          border: '1px solid var(--apple-hairline)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#64748B',
+                          color: 'var(--apple-text-muted)',
                         }}
                       >
                         <ImageIcon size={16} />
@@ -264,89 +358,84 @@ export default function DesignsManagePage() {
                     )}
                   </td>
 
-                  <td style={{ padding: '12px 20px' }}>
-                    <div style={{ fontWeight: 600, color: '#F8FAFC' }}>{d.title}</div>
-                    <div style={{ fontSize: '12px', color: '#C5A880' }}>{d.category_name}</div>
+                  <td>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        color: 'var(--apple-text-primary)',
+                        fontSize: '14px',
+                      }}
+                    >
+                      {d.title}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--apple-accent)',
+                        marginTop: '2px',
+                      }}
+                    >
+                      {d.category_name}
+                    </div>
                   </td>
 
-                  <td style={{ padding: '12px 20px' }}>
+                  <td>
                     <Link
                       to={`/management/designs/${d.id}/images`}
+                      className="apple-action-btn"
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '4px 10px',
-                        borderRadius: '4px',
-                        backgroundColor: '#1E2532',
-                        border: '1px solid #2B3344',
-                        color: '#60A5FA',
-                        textDecoration: 'none',
-                        fontSize: '12px',
-                        fontWeight: 500,
+                        padding: '5px 10px',
+                        backgroundColor: 'var(--apple-blue-subtle)',
+                        borderColor: 'rgba(96, 165, 250, 0.25)',
+                        color: 'var(--apple-blue)',
                       }}
                     >
                       <ImageIcon size={13} />
-                      <span>{d.images_count} Photos &rarr; Manage</span>
+                      <span>{d.images_count || 0} Photos &rarr; Manage</span>
                     </Link>
                   </td>
 
-                  <td style={{ padding: '12px 20px' }}>
+                  <td>
                     {d.is_featured ? (
-                      <span style={{ color: '#FBBF24', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Sparkles size={13} />
+                      <span className="apple-badge apple-badge-gold">
+                        <Sparkles size={11} />
                         <span>Featured</span>
                       </span>
                     ) : (
-                      <span style={{ color: '#64748B', fontSize: '12px' }}>Standard</span>
+                      <span style={{ color: 'var(--apple-text-muted)', fontSize: '12px' }}>
+                        Standard
+                      </span>
                     )}
                   </td>
 
-                  <td style={{ padding: '12px 20px' }}>
-                    <span
-                      style={{
-                        padding: '3px 8px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        backgroundColor: d.is_active ? 'rgba(52, 211, 153, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: d.is_active ? '#34D399' : '#EF4444',
-                      }}
-                    >
-                      {d.is_active ? 'Active' : 'Hidden'}
-                    </span>
+                  <td>
+                    {d.is_active ? (
+                      <span className="apple-badge apple-badge-success">Active</span>
+                    ) : (
+                      <span className="apple-badge apple-badge-muted">Hidden</span>
+                    )}
                   </td>
 
-                  <td style={{ padding: '12px 20px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '8px' }}>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="apple-action-group">
                       <button
                         onClick={() => handleOpenEdit(d)}
+                        className="apple-action-btn apple-action-btn-edit"
                         aria-label={`Edit ${d.title}`}
-                        style={{
-                          padding: '6px',
-                          background: 'none',
-                          border: '1px solid #2A303C',
-                          borderRadius: '4px',
-                          color: '#94A3B8',
-                          cursor: 'pointer',
-                        }}
+                        title="Edit Design Details"
                       >
-                        <Edit2 size={14} />
+                        <Edit2 size={13} />
+                        <span>Edit</span>
                       </button>
+
                       <button
                         onClick={() => handleDelete(d.id, d.title)}
+                        className="apple-action-btn apple-action-btn-delete"
                         aria-label={`Delete ${d.title}`}
-                        style={{
-                          padding: '6px',
-                          background: 'none',
-                          border: '1px solid rgba(239, 68, 68, 0.3)',
-                          borderRadius: '4px',
-                          color: '#EF4444',
-                          cursor: 'pointer',
-                        }}
+                        title="Delete Design"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={13} />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </td>
@@ -359,60 +448,74 @@ export default function DesignsManagePage() {
 
       {/* Add / Edit Design Modal */}
       {modalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-          }}
-        >
+        <div className="apple-modal-overlay" onClick={() => setModalOpen(false)}>
           <div
-            style={{
-              width: '100%',
-              maxWidth: '650px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              backgroundColor: '#12151B',
-              border: '1px solid #1E232E',
-              borderRadius: '8px',
-              padding: '32px',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-            }}
+            className="apple-modal-card"
+            style={{ maxWidth: '640px' }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', color: '#F8FAFC', fontFamily: 'var(--font-serif)' }}>
-                {editingDesign ? 'Edit Design' : 'Add New Design'}
+            {/* Modal Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                paddingBottom: '14px',
+                borderBottom: '1px solid var(--apple-hairline)',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: 'var(--apple-text-primary)',
+                  fontFamily: 'var(--font-serif)',
+                  margin: 0,
+                }}
+              >
+                {editingDesign ? 'Edit Decoration Setup' : 'Add New Decoration Setup'}
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--apple-text-muted)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {error && (
-              <div style={{ padding: '10px 14px', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#F87171', borderRadius: '4px', fontSize: '13px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  padding: '10px 14px',
+                  backgroundColor: 'var(--apple-danger-subtle)',
+                  color: 'var(--apple-danger)',
+                  border: '1px solid rgba(248, 113, 113, 0.3)',
+                  borderRadius: 'var(--apple-radius-sm)',
+                  fontSize: '13px',
+                  marginBottom: '16px',
+                }}
+              >
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Category *</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Category Theme *</label>
                 <select
                   required
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="form-select"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                  className="apple-select"
                 >
-                  <option value="">-- Select Category --</option>
+                  <option value="">-- Choose Category --</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -421,112 +524,165 @@ export default function DesignsManagePage() {
                 </select>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Design Title *</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Setup Title *</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Royal Ivory & Champagne Mandap"
-                  className="form-input"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                  placeholder="e.g. Royal Emerald Stage Arch"
+                  className="apple-input"
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Short Summary (Card Preview) *</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Short Summary *</label>
                 <input
                   type="text"
                   required
                   value={formData.short_description}
                   onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                  placeholder="Brief 1-2 sentence aesthetic summary..."
-                  className="form-input"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                  placeholder="e.g. Bespoke floral canopy with gold pillar arches"
+                  className="apple-input"
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Detailed Description</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Detailed Description</label>
                 <textarea
                   value={formData.detailed_description}
-                  onChange={(e) => setFormData({ ...formData, detailed_description: e.target.value })}
-                  placeholder="Full design story, materials, lighting details, and staging options..."
-                  className="form-textarea"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC', minHeight: '100px' }}
+                  onChange={(e) =>
+                    setFormData({ ...formData, detailed_description: e.target.value })
+                  }
+                  placeholder="Full floral composition notes, dimensions, lighting styling, etc..."
+                  className="apple-textarea"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Display Order</label>
+              {/* Toggles & Display Order */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                  gap: '16px',
+                  marginBottom: '16px',
+                }}
+              >
+                <div className="apple-input-group">
+                  <label className="apple-label">Display Order</label>
                   <input
                     type="number"
                     value={formData.display_order}
-                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })}
-                    className="form-input"
-                    style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                    onChange={(e) =>
+                      setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })
+                    }
+                    className="apple-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Featured</label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', height: '48px' }}>
+                <div className="apple-input-group">
+                  <label className="apple-label">Spotlight</label>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      height: '46px',
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={formData.is_featured}
                       onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                      style={{ width: '18px', height: '18px', accentColor: '#C5A880' }}
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        accentColor: 'var(--apple-accent)',
+                      }}
                     />
-                    <span style={{ fontSize: '13px', color: '#E2E8F0' }}>Home Feature</span>
+                    <span style={{ fontSize: '13px', color: 'var(--apple-text-primary)' }}>
+                      Feature on Home
+                    </span>
                   </label>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Active</label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', height: '48px' }}>
+                <div className="apple-input-group">
+                  <label className="apple-label">Status</label>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      height: '46px',
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={formData.is_active}
                       onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                      style={{ width: '18px', height: '18px', accentColor: '#C5A880' }}
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        accentColor: 'var(--apple-accent)',
+                      }}
                     />
-                    <span style={{ fontSize: '13px', color: '#E2E8F0' }}>Published</span>
+                    <span style={{ fontSize: '13px', color: 'var(--apple-text-primary)' }}>
+                      Active on site
+                    </span>
                   </label>
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>
-                  Primary Cover Image {editingDesign ? '(Optional to replace)' : '*'}
+              {/* Primary Image Upload */}
+              <div className="apple-input-group" style={{ marginBottom: '24px' }}>
+                <label className="apple-label">
+                  Primary Cover Photo {editingDesign ? '' : '*'}
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setPrimaryImageFile(e.target.files[0] || null)}
-                  style={{ fontSize: '13px', color: '#94A3B8' }}
+                  style={{ fontSize: '13px', color: 'var(--apple-text-secondary)' }}
                 />
-                <p style={{ fontSize: '12px', color: '#64748B', marginTop: '6px' }}>
-                  Note: You can add unlimited additional photos after creating the design in "Manage Photos".
-                </p>
+                {editingDesign?.primary_image && !primaryImageFile && (
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      fontSize: '12px',
+                      color: 'var(--apple-text-muted)',
+                    }}
+                  >
+                    Current cover active. Choose a new file above to replace it.
+                  </div>
+                )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              {/* Modal Actions */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '10px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid var(--apple-hairline)',
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn btn-outline btn-sm"
-                  style={{ borderColor: '#2A303C', color: '#94A3B8' }}
+                  className="apple-btn apple-btn-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn btn-gold btn-sm"
+                  className="apple-btn apple-btn-gold"
                 >
-                  <span>{saving ? 'Saving...' : 'Save Design'}</span>
+                  <span>{saving ? 'Saving...' : 'Save Setup'}</span>
                 </button>
               </div>
             </form>

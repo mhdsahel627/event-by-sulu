@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Check, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, Image as ImageIcon, FolderTree } from 'lucide-react';
 import { api } from '../../services/api';
 
 export default function CategoriesManagePage() {
@@ -62,7 +62,11 @@ export default function CategoriesManagePage() {
   };
 
   const handleDelete = async (id, name) => {
-    if (window.confirm(`Are you sure you want to delete category "${name}"? Designs belonging to this category will also be affected.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete category "${name}"? Setups belonging to this category will also be affected.`
+      )
+    ) {
       try {
         await api.deleteCategory(id);
         await loadCategories();
@@ -103,8 +107,8 @@ export default function CategoriesManagePage() {
   };
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-      {/* Header */}
+    <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+      {/* Header Bar */}
       <div
         style={{
           display: 'flex',
@@ -112,140 +116,159 @@ export default function CategoriesManagePage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '16px',
-          marginBottom: '32px',
+          marginBottom: '28px',
         }}
       >
         <div>
-          <h1 style={{ fontSize: '26px', color: '#F8FAFC', fontFamily: 'var(--font-serif)', marginBottom: '4px' }}>
+          <h1
+            style={{
+              fontSize: 'clamp(22px, 3vw, 26px)',
+              fontWeight: 600,
+              color: 'var(--apple-text-primary)',
+              fontFamily: 'var(--font-serif)',
+              marginBottom: '4px',
+            }}
+          >
             Category Management
           </h1>
-          <p style={{ color: '#94A3B8', fontSize: '14px' }}>
-            Manage public decoration collections, cover images, and display ordering.
+          <p style={{ color: 'var(--apple-text-secondary)', fontSize: '14px', margin: 0 }}>
+            Curate public collection themes, cover banners, and display ordering.
           </p>
         </div>
 
-        <button onClick={handleOpenAdd} className="btn btn-gold btn-sm">
+        <button onClick={handleOpenAdd} className="apple-btn apple-btn-gold">
           <Plus size={16} />
           <span>Add New Category</span>
         </button>
       </div>
 
-      {/* Categories Table / List */}
-      <div
-        style={{
-          backgroundColor: '#12151B',
-          border: '1px solid #1E232E',
-          borderRadius: '8px',
-          overflow: 'hidden',
-        }}
-      >
+      {/* Categories Table Wrap */}
+      <div className="apple-table-wrap">
         {loading ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#94A3B8' }}>
+          <div
+            style={{
+              padding: '48px',
+              textAlign: 'center',
+              color: 'var(--apple-text-muted)',
+              fontSize: '14px',
+            }}
+          >
             Loading categories...
           </div>
         ) : categories.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#94A3B8' }}>
-            No categories created yet. Click "Add New Category" above.
+          <div
+            style={{
+              padding: '56px 20px',
+              textAlign: 'center',
+              color: 'var(--apple-text-muted)',
+            }}
+          >
+            <FolderTree size={36} color="var(--apple-text-subtle)" style={{ marginBottom: '12px' }} />
+            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--apple-text-secondary)' }}>
+              No Categories Created Yet
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--apple-text-muted)', marginTop: '4px' }}>
+              Click "Add New Category" to create your first collection.
+            </p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <table className="apple-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid #1E232E', backgroundColor: '#171B22', color: '#94A3B8', fontSize: '12px', textTransform: 'uppercase' }}>
-                <th style={{ padding: '14px 20px' }}>Cover</th>
-                <th style={{ padding: '14px 20px' }}>Category Name</th>
-                <th style={{ padding: '14px 20px' }}>Designs</th>
-                <th style={{ padding: '14px 20px' }}>Order</th>
-                <th style={{ padding: '14px 20px' }}>Status</th>
-                <th style={{ padding: '14px 20px', textAlign: 'right' }}>Actions</th>
+              <tr>
+                <th style={{ width: '80px' }}>Cover</th>
+                <th>Category Name</th>
+                <th>Setups Count</th>
+                <th>Order</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((cat) => (
-                <tr
-                  key={cat.id}
-                  style={{
-                    borderBottom: '1px solid #1E232E',
-                    color: '#E2E8F0',
-                  }}
-                >
-                  <td style={{ padding: '12px 20px' }}>
+                <tr key={cat.id}>
+                  <td>
                     {cat.cover_image ? (
                       <img
                         src={cat.cover_image}
                         alt={cat.name}
-                        style={{ width: '54px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                        style={{
+                          width: '54px',
+                          height: '40px',
+                          objectFit: 'cover',
+                          borderRadius: '6px',
+                          border: '1px solid var(--apple-hairline)',
+                        }}
                       />
                     ) : (
                       <div
                         style={{
                           width: '54px',
                           height: '40px',
-                          borderRadius: '4px',
-                          backgroundColor: '#1E232D',
+                          borderRadius: '6px',
+                          backgroundColor: 'var(--apple-surface-elevated)',
+                          border: '1px solid var(--apple-hairline)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#64748B',
+                          color: 'var(--apple-text-muted)',
                         }}
                       >
                         <ImageIcon size={16} />
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <div style={{ fontWeight: 600, color: '#F8FAFC' }}>{cat.name}</div>
-                    <div style={{ fontSize: '12px', color: '#64748B' }}>/{cat.slug}</div>
-                  </td>
-                  <td style={{ padding: '12px 20px', color: '#94A3B8' }}>
-                    {cat.designs_count || 0}
-                  </td>
-                  <td style={{ padding: '12px 20px', color: '#94A3B8' }}>
-                    {cat.display_order}
-                  </td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <span
+
+                  <td>
+                    <div
                       style={{
-                        padding: '3px 8px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
                         fontWeight: 600,
-                        textTransform: 'uppercase',
-                        backgroundColor: cat.is_active ? 'rgba(52, 211, 153, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: cat.is_active ? '#34D399' : '#EF4444',
+                        color: 'var(--apple-text-primary)',
+                        fontSize: '14px',
                       }}
                     >
-                      {cat.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                      {cat.name}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--apple-text-muted)' }}>
+                      /{cat.slug}
+                    </div>
                   </td>
-                  <td style={{ padding: '12px 20px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '8px' }}>
+
+                  <td style={{ color: 'var(--apple-text-secondary)', fontWeight: 500 }}>
+                    {cat.designs_count || 0} designs
+                  </td>
+
+                  <td style={{ color: 'var(--apple-text-secondary)' }}>
+                    #{cat.display_order}
+                  </td>
+
+                  <td>
+                    {cat.is_active ? (
+                      <span className="apple-badge apple-badge-success">Active</span>
+                    ) : (
+                      <span className="apple-badge apple-badge-danger">Inactive</span>
+                    )}
+                  </td>
+
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="apple-action-group">
                       <button
                         onClick={() => handleOpenEdit(cat)}
+                        className="apple-action-btn apple-action-btn-edit"
                         aria-label={`Edit ${cat.name}`}
-                        style={{
-                          padding: '6px',
-                          background: 'none',
-                          border: '1px solid #2A303C',
-                          borderRadius: '4px',
-                          color: '#94A3B8',
-                          cursor: 'pointer',
-                        }}
+                        title="Edit Category"
                       >
-                        <Edit2 size={14} />
+                        <Edit2 size={13} />
+                        <span>Edit</span>
                       </button>
+
                       <button
                         onClick={() => handleDelete(cat.id, cat.name)}
+                        className="apple-action-btn apple-action-btn-delete"
                         aria-label={`Delete ${cat.name}`}
-                        style={{
-                          padding: '6px',
-                          background: 'none',
-                          border: '1px solid rgba(239, 68, 68, 0.3)',
-                          borderRadius: '4px',
-                          color: '#EF4444',
-                          cursor: 'pointer',
-                        }}
+                        title="Delete Category"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={13} />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </td>
@@ -258,126 +281,163 @@ export default function CategoriesManagePage() {
 
       {/* Add / Edit Category Modal */}
       {modalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '520px',
-              backgroundColor: '#12151B',
-              border: '1px solid #1E232E',
-              borderRadius: '8px',
-              padding: '32px',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', color: '#F8FAFC', fontFamily: 'var(--font-serif)' }}>
+        <div className="apple-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="apple-modal-card" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                paddingBottom: '14px',
+                borderBottom: '1px solid var(--apple-hairline)',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: 'var(--apple-text-primary)',
+                  fontFamily: 'var(--font-serif)',
+                  margin: 0,
+                }}
+              >
                 {editingCategory ? 'Edit Category' : 'Add New Category'}
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--apple-text-muted)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {error && (
-              <div style={{ padding: '10px 14px', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#F87171', borderRadius: '4px', fontSize: '13px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  padding: '10px 14px',
+                  backgroundColor: 'var(--apple-danger-subtle)',
+                  color: 'var(--apple-danger)',
+                  border: '1px solid rgba(248, 113, 113, 0.3)',
+                  borderRadius: 'var(--apple-radius-sm)',
+                  fontSize: '13px',
+                  marginBottom: '16px',
+                }}
+              >
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Category Name *</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Category Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Wedding Decoration"
-                  className="form-input"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                  className="apple-input"
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Description</label>
+              <div className="apple-input-group">
+                <label className="apple-label">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Short editorial summary for this collection..."
-                  className="form-textarea"
-                  style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC', minHeight: '80px' }}
+                  placeholder="Short editorial summary for this decoration collection..."
+                  className="apple-textarea"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Display Order</label>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '16px',
+                  marginBottom: '16px',
+                }}
+              >
+                <div className="apple-input-group">
+                  <label className="apple-label">Display Order</label>
                   <input
                     type="number"
                     value={formData.display_order}
-                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })}
-                    className="form-input"
-                    style={{ backgroundColor: '#191D24', borderColor: '#2A303C', color: '#F8FAFC' }}
+                    onChange={(e) =>
+                      setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })
+                    }
+                    className="apple-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Status</label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', height: '48px' }}>
+                <div className="apple-input-group">
+                  <label className="apple-label">Status</label>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      height: '46px',
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={formData.is_active}
                       onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                      style={{ width: '18px', height: '18px', accentColor: '#C5A880' }}
+                      style={{ width: '18px', height: '18px', accentColor: 'var(--apple-accent)' }}
                     />
-                    <span style={{ fontSize: '14px', color: '#E2E8F0' }}>Active on website</span>
+                    <span style={{ fontSize: '13px', color: 'var(--apple-text-primary)' }}>
+                      Active on site
+                    </span>
                   </label>
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label" style={{ fontSize: '12px', color: '#94A3B8' }}>Cover Image</label>
+              <div className="apple-input-group" style={{ marginBottom: '24px' }}>
+                <label className="apple-label">Cover Image</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setCoverImageFile(e.target.files[0] || null)}
-                  style={{ fontSize: '13px', color: '#94A3B8' }}
+                  style={{ fontSize: '13px', color: 'var(--apple-text-secondary)' }}
                 />
                 {editingCategory?.cover_image && !coverImageFile && (
-                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#64748B' }}>
-                    Current image attached. Select a new file above to replace.
+                  <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--apple-text-muted)' }}>
+                    Current image attached. Choose a new file above to replace it.
                   </div>
                 )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              {/* Action Buttons */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '10px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid var(--apple-hairline)',
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn btn-outline btn-sm"
-                  style={{ borderColor: '#2A303C', color: '#94A3B8' }}
+                  className="apple-btn apple-btn-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn btn-gold btn-sm"
+                  className="apple-btn apple-btn-gold"
                 >
                   <span>{saving ? 'Saving...' : 'Save Category'}</span>
                 </button>
