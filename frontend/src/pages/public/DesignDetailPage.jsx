@@ -201,7 +201,7 @@ export default function DesignDetailPage() {
                 whiteSpace: 'pre-line',
               }}
             >
-              {design.detailed_description || design.short_description}
+              {design.detailed_description }
             </div>
 
             <div
